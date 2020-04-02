@@ -10,7 +10,7 @@ module.exports = class {
   version(cb) {
     const keyword = '~ZKFPVersion';
 
-    this.executeCmd(Commands.DEVICE, keyword, (err, ret) => {
+    this.executeCmd(Commands.VERSION, keyword, (err, ret) => {
       if (err) {
         return cb(err);
       }

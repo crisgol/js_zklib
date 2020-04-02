@@ -1,17 +1,33 @@
 const attParserLegacy = require('./att_parser_legacy');
 const attParserV660 = require('./att_parser_v6.60');
+const attParserV640 = require('./att_parser_v6.40');
 const {Commands, States, ConnectionTypes} = require('./constants');
 const {createHeader, removeTcpHeader} = require('./utils');
 
 module.exports = class {
   decodeAttendanceData(attdata) {
     switch (this.attendanceParser) {
+      case attParserV640.name:
+        return attParserV640.parse(attdata);
       case attParserV660.name:
         return attParserV660.parse(attdata);
 
       case attParserLegacy.name:
       default:
         return attParserLegacy.parse(attdata);
+    }
+  }
+
+  getAtt_DataSize() {
+    switch (this.attendanceParser) {
+      case attParserV640.name:
+        return attParserV640.ATTDATA_SIZE;
+      case attParserV660.name:
+        return attParserV660.ATTDATA_SIZE;
+
+      case attParserLegacy.name:
+      default:
+        return attParserLegacy.ATTDATA_SIZE;
     }
   }
 
@@ -24,7 +40,8 @@ module.exports = class {
 
     const buf = createHeader(Commands.ATTLOG_RRQ, this.session_id, this.reply_id, '', this.connectionType);
 
-    const ATTDATA_SIZE = 40;
+    //const ATTDATA_SIZE = 40;
+    const ATTDATA_SIZE = this.getAtt_DataSize();
     const TRIM_FIRST = 10;
     const TRIM_NEXT = this.connectionType === ConnectionTypes.UDP ? 8 : 0;
 

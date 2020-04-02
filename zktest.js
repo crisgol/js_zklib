@@ -1,11 +1,13 @@
 const ZKLib = require('./zklib/zklib');
+const attParserV660 = require('./zklib/att_parser_v6.60');
+const attParserV640 = require('./zklib/att_parser_v6.40');
 const async = require('async');
 
-const ip = '192.168.1.201';
+const ip = '192.168.1.133';
 const port = 4370;
 const inport = 5200;
 
-const zk = new ZKLib({ ip, port, inport });
+const zk = new ZKLib({ip, port, inport, attendanceParser: attParserV640.name});
 
 async.series(
   [
@@ -39,9 +41,14 @@ async.series(
       });
     },
     (next, err, ret) => {
-      zk.getuser((err, ret) => {
+      /* zk.getuser((err, ret) => {
         console.log(err, ret);
         next(err, ret);
+      });
+      */
+      zk.setuser(56, '', 'Leh Sun', '56', (err, ret) => {
+        console.log(err, ret);
+        next();
       });
     },
     (next, err, ret) => {
@@ -55,7 +62,7 @@ async.series(
         console.log(err, ret);
         next();
       });
-    }
+    },
   ],
   err => {
     console.log('done!');

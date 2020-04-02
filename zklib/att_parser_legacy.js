@@ -1,6 +1,7 @@
 const timeParser = require('./timestamp_parser');
 
 module.exports.name = 'legacy';
+module.exports.ATTDATA_SIZE = 40;
 
 module.exports.parse = attdata => ({
   uid:
@@ -20,5 +21,5 @@ module.exports.parse = attdata => ({
         .shift()
     ) || 0,
   state: attdata[28],
-  timestamp: timeParser.decode(attdata.readUInt32LE(29))
+  timestamp: timeParser.decode(attdata.readUInt32LE(29)),
 });

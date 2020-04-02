@@ -1,10 +1,10 @@
 const timeParser = require('./timestamp_parser');
 
-module.exports.name = 'v6.60';
-module.exports.ATTDATA_SIZE = 40;
+module.exports.name = 'v6.40';
+module.exports.ATTDATA_SIZE = 16;
 
-const uidIndex = 4;
-const uidLength = 9;
+const uidIndex = 6;
+const uidLength = 1;
 
 /**
   @typedef Attendance
@@ -24,9 +24,9 @@ const uidLength = 9;
  */
 module.exports.parse = attdata => ({
   id: (attdata[3] << 8) + attdata[2],
-  uid: parseInt(attdata.slice(uidIndex, uidIndex + uidLength).toString('ascii')),
-  state: attdata[28],
-  timestamp: timeParser.decode(attdata.readUInt32LE(29)),
-  verificationType: attdata[28],
-  inOutStatus: attdata[33],
+  //uid: parseInt(attdata.slice(uidIndex, uidIndex + uidLength).toString('ascii')), //pose ser o RFID
+  state: attdata[11],
+  timestamp: timeParser.decode(attdata.readUInt32LE(6)),
+  verificationType: attdata[5],
+  inOutStatus: attdata[10],
 });

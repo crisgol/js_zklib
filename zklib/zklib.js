@@ -4,6 +4,7 @@ var net = require('net');
 const mixin = require('./mixin');
 const attParserLegacy = require('./att_parser_legacy');
 const attParserV660 = require('./att_parser_v6.60');
+const attParserV640 = require('./att_parser_v6.40');
 const {defaultTo, createHeader, checkValid, removeTcpHeader} = require('./utils');
 const {Commands, USHRT_MAX, ConnectionTypes} = require('./constants');
 
@@ -57,7 +58,10 @@ class ZKLib {
       throw new Error('Inport option required');
     }
 
-    if (options.attendanceParser && ![attParserLegacy.name, attParserV660.name].includes(options.attendanceParser)) {
+    if (
+      options.attendanceParser &&
+      ![attParserLegacy.name, attParserV660.name, attParserV640.name].includes(options.attendanceParser)
+    ) {
       throw new Error('Attendance parser option unknown');
     }
 
@@ -163,10 +167,7 @@ class ZKLib {
       socket.setTimeout(this.timeout);
     }
 
-    socket.connect(
-      this.port,
-      this.ip
-    );
+    socket.connect(this.port, this.ip);
 
     return socket;
   }

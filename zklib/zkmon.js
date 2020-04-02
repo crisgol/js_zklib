@@ -28,7 +28,7 @@ module.exports = class {
       }
     });
 
-    const buf = new Buffer(12);
+    const buf = new Buffer.alloc(12);
 
     buf.writeUInt16LE(Commands.REG_EVENT, 0);
     buf.writeUInt16LE(0, 2);

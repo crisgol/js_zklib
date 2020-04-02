@@ -94,7 +94,7 @@ class ZkUser {
    */
   enrollUser(uid, cb) {
     const command = Commands.START_ENROLL;
-    const command_string = new Buffer(2);
+    const command_string = new Buffer.alloc(2);
 
     command_string.write(uid.toString());
 
@@ -136,15 +136,24 @@ class ZkUser {
      * @param {Buffer} reply
      */
     const handleOnData = reply => {
-      reply = this.connectionType === ConnectionTypes.UDP ? reply : removeTcpHeader(reply);
+      //reply = this.connectionType === ConnectionTypes.UDP ? reply : removeTcpHeader(reply);
 
       switch (state) {
         case States.FIRST_PACKET:
           state = States.PACKET;
 
+          reply = this.connectionType === ConnectionTypes.UDP ? reply : removeTcpHeader(reply);
+
           if (reply && reply.length) {
+            const cmd = reply.readUInt16LE(0);
             // total_bytes = getSizeUser(reply);
-            total_bytes = reply.readUInt32LE(8);
+            if (cmd == Commands.ACK_ERROR) {
+              internalCallback(new Error('ack error'));
+              return;
+            }
+
+            total_bytes = reply.readUInt32LE(8) - 4;
+            total_bytes += 2;
 
             if (total_bytes <= 0) {
               internalCallback(new Error('no data'));
@@ -160,7 +169,7 @@ class ZkUser {
           }
 
           break;
-
+        //todo
         case States.PACKET:
           if (bytes_recv == 0) {
             offset = trim_first;
